@@ -1,0 +1,276 @@
+/* Estilos generales */
+.container {
+  min-height: 100vh;
+  background-color: #f0f0f0;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Ajuste de la posición del contenido principal para evitar que quede oculto detrás de la barra de navegación */
+.container.content {
+  padding-top: 80px;
+  /* Ajusta según sea necesario para evitar que el contenido quede detrás de la barra de navegación */
+}
+
+/* Estilos para el formulario */
+.form-box {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  margin: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+select {
+  appearance: none;
+}
+
+button[type="submit"],
+.buttons button,
+.buttons .forgot {
+  width: 100%;
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.buttons button:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+}
+
+label {
+  display: block;
+}
+
+/* Estilos para la barra de navegación */
+.navbar {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Alinea verticalmente los elementos */
+  border-bottom: 2px solid #555;
+  /* Grosor de la barra de navegación */
+}
+
+/* Ajuste de la posición del contenido principal para evitar que quede oculto detrás de la barra de navegación */
+.container.content {
+  padding-top: 80px;
+  /* Ajusta según sea necesario para evitar que el contenido quede detrás de la barra de navegación */
+}
+
+/* Alineación vertical de los elementos de la barra de navegación */
+.navigation-links {
+  display: flex;
+  align-items: center;
+}
+
+.navigation ul {
+  list-style: none;
+  padding: 5px;
+  display: flex;
+  /* Mostrar los elementos como flexbox */
+  margin-left: 10px;
+}
+
+.navigation a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navigation a:hover {
+  text-decoration: underline;
+}
+
+.navigation-item {
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.navigation-item:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos para el footer */
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* Estilo de tipografía bonita */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logo {
+  height: 30px;
+  /* Ajusta la altura del logo según sea necesario */
+}
+
+/* Estilos para los checkboxes */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  /* Permite que los checkboxes se envuelvan automáticamente si no hay suficiente espacio en la línea */
+  margin-bottom: 10px;
+}
+
+.checkbox-label {
+  margin-right: 20px;
+  /* Espacio entre cada checkbox */
+  display: flex;
+  /* Alinea el contenido verticalmente */
+  align-items: center;
+  /* Centra verticalmente el checkbox y el texto */
+  color: #999;
+  /* Color del texto similar al color del placeholder */
+}
+
+.checkbox-group label {
+  color: #999;
+  /* Color del texto similar al color del placeholder */
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-right: 5px;
+  /* Espacio entre el checkbox y el texto */
+  height: 1em;
+  /* Establece la altura del checkbox igual al tamaño de la fuente */
+  width: 1em;
+  /* Establece el ancho del checkbox igual al tamaño de la fuente */
+  appearance: none;
+  /* Elimina los estilos predeterminados del checkbox */
+}
+
+.checkbox-label input[type="checkbox"]::before {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  /* Establece el ancho del cuadro del checkbox */
+  height: 1em;
+  /* Establece la altura del cuadro del checkbox */
+  border: 2px solid #007bff;
+  /* Cambia el color del borde del checkbox */
+  background-color: transparent;
+  /* Establece el fondo del cuadro del checkbox como transparente */
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+.checkbox-label input[type="checkbox"]:checked::before {
+  background-color: #007bff;
+  /* Cambia el color de fondo del checkbox cuando está seleccionado */
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.slider {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.book-details {
+  flex: 1;
+  text-align: center;
+}
+
+.button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 5px;
+}
+
+.button:hover {
+  background-color: #ddd;
+}
+
+.footer {
+  margin-top: auto;
+  text-align: center;
+  font-size: 14px;
+  height: 20px;
+}
+
+.newsImage{
+  height: 180px;
+  width: auto;
+}
+
+.carousel-caption {
+  color: black; /* Cambia el color del texto a negro */
+  position: absolute; /* Posiciona el recuadro sobre la imagen */
+  bottom: 0; /* Alinea el recuadro en la parte inferior */
+  left: 0; /* Alinea el recuadro a la izquierda */
+  right: 0; /* Alinea el recuadro a la derecha */
+  background-color: rgba(255, 255, 255, 0.7); /* Fondo semi-transparente */
+  padding: 20px; /* Espaciado interno */
+}
