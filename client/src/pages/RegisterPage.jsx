@@ -6,7 +6,7 @@ import axios from "axios";
 import countryOptions from '../components/conuntries.js';
 import addYears from 'date-fns/addYears';
 
-import 'bootstrap/dist/css/bootstrap.min.css'; // Importar estilos de Bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -23,6 +23,9 @@ export function RegisterPage() {
         address: ''
     });
 
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState(''); // Definir el estado para el error de contraseña
+
     const today = new Date();
     const minDate = addYears(today, -18);
 
@@ -32,6 +35,25 @@ export function RegisterPage() {
             ...prevState,
             [name]: value
         }));
+
+        // Validar el formato del correo electrónico
+        if (name === 'email') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                setEmailError('Por favor, ingrese un correo electrónico válido');
+            } else {
+                setEmailError('');
+            }
+        }
+        // Validar la contraseña
+        if (name === 'password') {
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{7,}$/;
+            if (!passwordRegex.test(value)) {
+                setPasswordError('La contraseña debe contener al menos una mayúscula, un número y tener al menos 7 caracteres');
+            } else {
+                setPasswordError('');
+            }
+        }
     };
 
     const handleCheckboxChange = (e) => {
@@ -62,6 +84,9 @@ export function RegisterPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // Combina los nuevos campos de dirección en una sola cadena
+            const addressString = `${formData.street || ''} ${formData.number || ''}, ${formData.neighborhood || ''}, ${formData.municipality || ''}, ${formData.department || ''}`;
+
             const userData = {
                 user: {
                     username: formData.email,
@@ -72,7 +97,7 @@ export function RegisterPage() {
                 surnames: formData.surnames,
                 birthdate: formData.birthdate ? formData.birthdate.toISOString().split('T')[0] : '',
                 birthplace: formData.birthplace,
-                address: formData.address,
+                address: addressString, // Enviar solo la cadena de dirección
                 gender: formData.gender === 'Hombre' ? 'Masculino' : formData.gender,
                 fav_topics: formData.favTopics.join(', '),
             };
@@ -102,6 +127,7 @@ export function RegisterPage() {
                             placeholder="Correo Electrónico"
                             required
                         />
+                        {emailError && <div className="text-danger">{emailError}</div>}
                     </div>
                     <div className="form-group">
                         <input
@@ -114,6 +140,7 @@ export function RegisterPage() {
                             placeholder="Contraseña"
                             required
                         />
+                        {passwordError && <div className="text-danger">{passwordError}</div>} {/* Mostrar el error de contraseña */}
                     </div>
                     <div className="form-group">
                         <input
@@ -162,6 +189,9 @@ export function RegisterPage() {
                             placeholderText="Seleccione fecha"
                             dateFormat="dd/MM/yyyy"
                             maxDate={minDate}
+                            showYearDropdown
+                            showMonthDropdown
+                            dropdownMode="select"
                             required
                         />
                     </div>
@@ -228,36 +258,90 @@ export function RegisterPage() {
                             <option value="Mujer">Mujer</option>
                             <option value="Otro">Otro</option>
                         </select>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="dni">DNI:</label>
-                        <input
-                            type="text"
-                            id="dni"
-                            name="dni"
-                            value={formData.dni}
-                            onChange={handleChange}
-                            className="form-control"
-                            placeholder="Ingrese su DNI"
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="address">Dirección:</label>
-                        <input
-                            type="text"
-                            id="address"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            className="form-control"
-                            placeholder="Ingrese su dirección"
-                            required
-                        />
-                    </div>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="dni">DNI:</label>
+                            <input
+                                type="text"
+                                id="dni"
+                                name="dni"
+                                value={formData.dni}
+                                onChange={handleChange}
+                                className="form-control"
+                                placeholder="Ingrese su DNI"
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="address">Dirección:</label>
+                            <div className="row">
+                                <div className="col-sm">
+                                    <input
+                                        type="text"
+                                        id="street"
+                                        name="street"
+                                        value={formData.street}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Calle o Manzana"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-sm">
+                                    <input
+                                        type="text"
+                                        id="number"
+                                        name="number"
+                                        value={formData.number}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Número"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-sm">
+                                    <input
+                                        type="text"
+                                        id="neighborhood"
+                                        name="neighborhood"
+                                        value={formData.neighborhood}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Barrio"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-sm">
+                                    <input
+                                        type="text"
+                                        id="municipality"
+                                        name="municipality"
+                                        value={formData.municipality}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Municipio"
+                                        required
+                                    />
+                                </div>
+                                <div className="col-sm">
+                                    <input
+                                        type="text"
+                                        id="department"
+                                        name="department"
+                                        value={formData.department}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Departamento"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     <button type="submit" className="btn btn-primary">Registrarse</button>
                 </form>
             </div>
         </div>
     );
 }
+
+export default RegisterPage;
