@@ -4,8 +4,9 @@ import axios from "axios";
 import logo from "../assets/book.jpeg"; // Importa la imagen
 
 export function Navigation() {
-  // Estado para controlar si el usuario está autenticado
+  // Estado para controlar si el usuario está autenticado y el tipo de usuario
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(null);
 
   // Verificar el estado de autenticación al cargar el componente
   useEffect(() => {
@@ -15,16 +16,19 @@ export function Navigation() {
   // Función para verificar el estado de autenticación 
   const checkAuthentication = async () => {
     try {
-      // Obtenemos el token de acceso del almacenamiento local
+      // Obtenemos el token de acceso y el tipo de usuario del almacenamiento local
       const accessToken = localStorage.getItem('accessToken');
+      const userType = localStorage.getItem('type');
 
       // Verificamos si el token de acceso existe y es válido
       if (accessToken) {
         setIsLoggedIn(true);
+        setUserType(userType);
       }
     } catch (error) {
       // Si hay un error, el usuario no está autenticado
       setIsLoggedIn(false);
+      setUserType(null);
       console.error('Error al verificar autenticación:', error);
     }
   };
@@ -79,18 +83,30 @@ export function Navigation() {
           {isLoggedIn ? (
             <>
               <li className="nav-item">
-                <button className="nav-link btn btn-link" onClick={handleLogout}>Cerrar Sesión</button>
+                <button className="nav-link btn btn-link" onClick={handleLogout}>
+                  Cerrar Sesión
+                </button>
               </li>
-              <li className="nav-item">
-                <Link to="/clientprofile" className="nav-link">Perfil</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/shop" className="nav-link">Compra</Link>
-              </li>
+              {userType !== 'admin' && userType !== 'root' && (
+                <>
+                  <li className="nav-item">
+                    <Link to="/clientprofile" className="nav-link">
+                      Perfil
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/shop" className="nav-link">
+                      Compra
+                    </Link>
+                  </li>
+                </>
+              )}
             </>
           ) : (
             <li className="nav-item">
-              <Link to="/task-create" className="nav-link">Iniciar Sesión</Link>
+              <Link to="/task-create" className="nav-link">
+                Iniciar Sesión
+              </Link>
             </li>
           )}
           <li className="nav-item">

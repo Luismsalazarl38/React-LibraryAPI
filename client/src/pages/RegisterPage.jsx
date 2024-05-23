@@ -64,13 +64,13 @@ export function RegisterPage() {
             }
         }
     
-        // Validar que los campos de dirección sean números
-        if (name === 'street' || name === 'number') {
+        // Validar que solo el número de la dirección sea un número
+        if (name === 'number') {
             const numberRegex = /^[0-9]*$/;
             if (!numberRegex.test(value)) {
                 setFormData(prevState => ({
                     ...prevState,
-                    addressError: 'La calle y el número deben contener solo números'
+                    addressError: 'El número de la dirección debe contener solo números'
                 }));
             } else {
                 setFormData(prevState => ({
@@ -81,6 +81,8 @@ export function RegisterPage() {
         }
     
         // Validar que la contraseña y la confirmación de contraseña sean iguales
+        
+        
         if (name === 'confirmPassword') {
             if (value !== formData.password) {
                 setPasswordError('Las contraseñas no coinciden');
@@ -99,6 +101,7 @@ export function RegisterPage() {
             }
         }
     };
+    
 
     const handleCheckboxChange = (e) => {
         const { value, checked } = e.target;
