@@ -13,7 +13,7 @@ export function Navigation() {
     checkAuthentication();
   }, []);
 
-  // Función para verificar el estado de autenticación 
+  // Función para verificar el estado de autenticación
   const checkAuthentication = async () => {
     try {
       // Obtenemos el token de acceso y el tipo de usuario del almacenamiento local
@@ -67,6 +67,14 @@ export function Navigation() {
     }
   };
 
+  const handleStores = async () => {
+    window.location.href = "/adminstores";
+  };
+
+  const handleBooks = async () => {
+    window.location.href = "/adminbooks";
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       {/* Logo */}
@@ -87,6 +95,20 @@ export function Navigation() {
                   Cerrar Sesión
                 </button>
               </li>
+              {userType === 'admin' && (
+                <>
+                  <li className="nav-item">
+                    <button className="nav-link btn btn-link" onClick={handleStores}>
+                      Modificar Tiendas
+                    </button>
+                  </li>
+                  <li className="nav-item">
+                    <button className="nav-link btn btn-link" onClick={handleBooks}>
+                      Modificar Libros
+                    </button>
+                  </li>
+                </>
+              )}
               {userType !== 'admin' && userType !== 'root' && (
                 <>
                   <li className="nav-item">
