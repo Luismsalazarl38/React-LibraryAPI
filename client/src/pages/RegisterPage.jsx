@@ -93,9 +93,10 @@ export function RegisterPage() {
     
         // Validar la contraseña
         if (name === 'password') {
-            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{7,}$/;
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)\S{7,}$/;
+
             if (!passwordRegex.test(value)) {
-                setPasswordError('La contraseña debe contener al menos una mayúscula, un número y tener al menos 7 caracteres');
+                setPasswordError('La contraseña debe contener al menos una mayúscula, un número y tener al menos 7 caracteres, sin espacios en blanco');
             } else {
                 setPasswordError('');
             }
