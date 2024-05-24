@@ -6,7 +6,9 @@ export function Shop() {
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [client, setClient] = useState(null); // Agregamos el estado para el cliente
-  
+  const [cardDetails, setCardDetails] = useState({}); // Estado para almacenar detalles de la tarjeta
+  const [selectedBookId, setSelectedBookId] = useState(null); // Estado para controlar qué tarjeta está seleccionada
+
   useEffect(() => {
     // Obtener la información del cliente al cargar el componente
     axios.get('http://localhost:8000/users/clients/')
@@ -27,7 +29,28 @@ export function Shop() {
       });
   }, []);
 
-  const handleReserve = async (bookId) => { // Modifica el argumento para recibir el ID del libro
+  const handleReserve = async (bookId) => {
+    try {
+      // Realizar la solicitud POST al endpoint de reservas
+      const response = await axios.post('http://localhost:8000/manage/reservations/', {
+        book: bookId,
+        client: client.id,
+        expired: false,
+        date: new Date().toISOString()
+      });
+  
+      if (response.status === 201) {
+        console.log('Reserva realizada con éxito');
+      } else {
+        console.log('Error al realizar la reserva');
+      }
+    } catch (error) {
+      console.error('Error al realizar la reserva:', error);
+    }
+  };
+  
+
+  const handleBuy = async (bookId) => { // <-- Agrega bookId como argumento
     try {
       // Verificar si se ha cargado la información del cliente
       if (!client) {
@@ -35,26 +58,31 @@ export function Shop() {
         return;
       }
 
-      // Obtener información detallada del cliente
-      const clientResponse = await axios.get(`http://localhost:8000/users/clients/${client.id}`);
-      const clientId = clientResponse.data.id;
-
-      // Crear la reserva utilizando los IDs del libro y del cliente
-      const response = await axios.post('http://localhost:8000/manage/reservations/', {
+      // Realizar la solicitud POST al endpoint de ventas
+      const response = await axios.post('http://localhost:8000/manage/sales/', {
         book: bookId,
-        client: clientId,
-        expired: false,
-        date: new Date().toISOString()
+        client: client.id,
+        date: new Date().toISOString(),
+        delivered: false,
+        returned: false
       });
 
       if (response.status === 201) {
-        console.log('Reserva creada con éxito');
+        console.log('Compra realizada con éxito');
       } else {
-        console.log('Error al crear la reserva');
+        console.log('Error al realizar la compra');
       }
     } catch (error) {
-      console.error('Error al crear la reserva:', error);
+      console.error('Error al realizar la compra:', error);
     }
+  };
+
+  const handlePaymentSubmit = async (e, bookId) => { // <-- Agrega bookId como argumento
+    e.preventDefault();
+    // Aquí puedes implementar la lógica para enviar los detalles de la tarjeta al backend
+    console.log('Detalles de la tarjeta:', cardDetails);
+    // Luego de enviar los detalles de la tarjeta, realizar la compra
+    await handleBuy(bookId); // <-- Utiliza el bookId pasado como argumento
   };
 
   const filteredBooks = books.filter(book =>
@@ -96,9 +124,19 @@ export function Shop() {
               </div>
               <div className="card-footer">
                 <div className="d-grid gap-2">
-                  <button className="btn btn-primary" type="button">Comprar</button>
+                  {/* Mostrar el formulario de la tarjeta solo en la tarjeta seleccionada */}
+                  {selectedBookId === book.id && (
+                    <form onSubmit={(e) => handlePaymentSubmit(e, book.id)}>
+                      <input type="text" placeholder="Número de tarjeta" value={cardDetails.cardNumber || ''} onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: e.target.value })} required />
+                      <input type="text" placeholder="Mes de expiración" value={cardDetails.expiryMonth || ''} onChange={(e) => setCardDetails({ ...cardDetails, expiryMonth: e.target.value })} required />
+                      <input type="text" placeholder="Año de expiración" value={cardDetails.expiryYear || ''} onChange={(e) => setCardDetails({ ...cardDetails, expiryYear: e.target.value })} required />
+                      <input type="text" placeholder="Código de seguridad" value={cardDetails.securityCode || ''} onChange={(e) => setCardDetails({ ...cardDetails, securityCode: e.target.value })} required />
+                      <button type="submit" className="btn btn-primary">Comprar</button>
+                    </form>
+                  )}
+                  {/* Mostrar el botón Comprar y cambiar el estado de selectedBookId cuando se haga clic */}
+                  <button className="btn btn-primary" type="button" onClick={() => setSelectedBookId(book.id)}>Comprar</button>
                   <button className="btn btn-secondary" type="button" onClick={() => handleReserve(book.id)}>Reservar</button>
-                  {/* Reemplaza 'DNI_DEL_CLIENTE' con el DNI real del cliente */}
                 </div>
               </div>
             </div>
