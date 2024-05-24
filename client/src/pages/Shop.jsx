@@ -27,12 +27,8 @@ export function Shop() {
       });
   }, []);
 
-  const handleReserve = async (bookName) => {
+  const handleReserve = async (bookId) => { // Modifica el argumento para recibir el ID del libro
     try {
-      // Obtener información detallada del libro
-      const bookResponse = await axios.get(`http://localhost:8000/manage/books/?title=${bookName}`);
-      const bookId = bookResponse.data[0].id; // Suponiendo que solo hay un libro con ese título
-
       // Verificar si se ha cargado la información del cliente
       if (!client) {
         console.error('No se ha cargado la información del cliente.');
@@ -101,7 +97,8 @@ export function Shop() {
               <div className="card-footer">
                 <div className="d-grid gap-2">
                   <button className="btn btn-primary" type="button">Comprar</button>
-                  <button className="btn btn-secondary" type="button" onClick={() => handleReserve(book.title)}>Reservar</button>
+                  <button className="btn btn-secondary" type="button" onClick={() => handleReserve(book.id)}>Reservar</button>
+                  {/* Reemplaza 'DNI_DEL_CLIENTE' con el DNI real del cliente */}
                 </div>
               </div>
             </div>

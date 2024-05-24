@@ -16,6 +16,7 @@ import { RootProfile } from "./pages/RootProfile";
 import { Contact } from "./pages/Contact";
 import { AboutUs } from "./pages/AboutUs";
 import { Shop } from "./pages/Shop";
+import Reservations from "./pages/reservations"; // Importa el componente Reservations
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -38,6 +39,7 @@ function App() {
         <Route key="contact" path="/contact" element={<Contact />} />
         <Route key="aboutus" path="/aboutus" element={<AboutUs />} />
         <Route key="shop" path="/shop" element={<Shop />} />
+        <Route key="reservations" path='/reservations' element={<Reservations />} /> {/* Utiliza el componente Reservations */}
       </Routes>
       <Footer/>
     </BrowserRouter>

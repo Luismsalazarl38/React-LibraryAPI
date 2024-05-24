@@ -109,7 +109,7 @@ export function Navigation() {
                   </li>
                 </>
               )}
-              {userType !== 'admin' && userType !== 'root' && (
+              {userType === 'client' && (
                 <>
                   <li className="nav-item">
                     <Link to="/clientprofile" className="nav-link">
@@ -119,6 +119,11 @@ export function Navigation() {
                   <li className="nav-item">
                     <Link to="/shop" className="nav-link">
                       Compra
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/reservations" className="nav-link">
+                      Reservas
                     </Link>
                   </li>
                 </>
