@@ -3,13 +3,21 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar estilos de Bootstrap
 
 export function Shop() {
-  // Estado para almacenar la lista de libros
   const [books, setBooks] = useState([]);
-  // Estado para almacenar el término de búsqueda
   const [searchTerm, setSearchTerm] = useState("");
+  const [client, setClient] = useState(null); // Agregamos el estado para el cliente
   
-  // Función para cargar los libros desde el servidor
   useEffect(() => {
+    // Obtener la información del cliente al cargar el componente
+    axios.get('http://localhost:8000/users/clients/')
+      .then(response => {
+        setClient(response.data[0]); // Suponiendo que solo hay un cliente y lo guardamos en el estado
+      })
+      .catch(error => {
+        console.error('Error fetching client:', error);
+      });
+
+    // Obtener la lista de libros al cargar el componente
     axios.get('http://localhost:8000/manage/books/')
       .then(response => {
         setBooks(response.data);
@@ -17,9 +25,42 @@ export function Shop() {
       .catch(error => {
         console.error('Error fetching books:', error);
       });
-  }, []); // Ejecutar solo una vez al montar el componente
-  
-  // Función para filtrar libros según el término de búsqueda
+  }, []);
+
+  const handleReserve = async (bookName) => {
+    try {
+      // Obtener información detallada del libro
+      const bookResponse = await axios.get(`http://localhost:8000/manage/books/?title=${bookName}`);
+      const bookId = bookResponse.data[0].id; // Suponiendo que solo hay un libro con ese título
+
+      // Verificar si se ha cargado la información del cliente
+      if (!client) {
+        console.error('No se ha cargado la información del cliente.');
+        return;
+      }
+
+      // Obtener información detallada del cliente
+      const clientResponse = await axios.get(`http://localhost:8000/users/clients/${client.id}`);
+      const clientId = clientResponse.data.id;
+
+      // Crear la reserva utilizando los IDs del libro y del cliente
+      const response = await axios.post('http://localhost:8000/manage/reservations/', {
+        book: bookId,
+        client: clientId,
+        expired: false,
+        date: new Date().toISOString()
+      });
+
+      if (response.status === 201) {
+        console.log('Reserva creada con éxito');
+      } else {
+        console.log('Error al crear la reserva');
+      }
+    } catch (error) {
+      console.error('Error al crear la reserva:', error);
+    }
+  };
+
   const filteredBooks = books.filter(book =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -33,7 +74,6 @@ export function Shop() {
       <h1 className="mt-5 mb-3">¡Bienvenido a nuestra tienda!</h1>
       <h2 className="mb-4">Explora nuestras últimas novedades</h2>
       
-      {/* Campo de búsqueda */}
       <div className="mb-3 row">
         <div className="col">
           <input
@@ -61,7 +101,7 @@ export function Shop() {
               <div className="card-footer">
                 <div className="d-grid gap-2">
                   <button className="btn btn-primary" type="button">Comprar</button>
-                  <button className="btn btn-secondary" type="button">Reservar</button>
+                  <button className="btn btn-secondary" type="button" onClick={() => handleReserve(book.title)}>Reservar</button>
                 </div>
               </div>
             </div>
