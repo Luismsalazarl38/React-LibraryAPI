@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 export function AdminBooks() {
-  // Estado para almacenar la lista de admins
+  // Estado para almacenar la lista de libros
   const [books, setBooks] = useState([]);
   const [formData, setFormData] = useState({
     id: '',
@@ -18,17 +18,18 @@ export function AdminBooks() {
     condition: '',
     price: ''
   });
+  const [showForm, setShowForm] = useState(false); // Estado para controlar la visibilidad del formulario
 
-  // Estado para controlar el índice del admin actual
+  // Estado para controlar el índice del libro actual
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Función para desplazarse al admin anterior
+  // Función para desplazarse al libro anterior
   const prevBook = () => {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? books.length - 1 : prevIndex - 1));
   };
 
-  // Función para desplazarse al siguiente admin
-  const nextBook  = () => {
+  // Función para desplazarse al siguiente libro
+  const nextBook = () => {
     setCurrentIndex((prevIndex) => (prevIndex === books.length - 1 ? 0 : prevIndex + 1));
   };
 
@@ -51,7 +52,7 @@ export function AdminBooks() {
         language: formData.language,
         condition: formData.condition,
         price: formData.price
-    };
+      };
       const response = await axios.patch(`http://localhost:8000/manage/books/${formData.id}/`, userData);
       if (response) {
         window.location.reload();
@@ -63,29 +64,29 @@ export function AdminBooks() {
     }
   };
 
-  // Función para cargar los admins desde el servidor
+  // Función para cargar los libros desde el servidor
   useEffect(() => {
     axios.get('http://localhost:8000/manage/books/')
       .then(response => {
         setBooks(response.data);
         const currentBook = response.data[currentIndex];
         setFormData({
-            id: currentBook.id,
-            store: currentBook.store,
-            title: currentBook.title,
-            author: currentBook.author,
-            pubYear: currentBook.pubYear,
-            gender: currentBook.gender,
-            pages: currentBook.pages,
-            editorial: currentBook.editorial,
-            issbn: currentBook.issbn,
-            language: currentBook.language,
-            condition: currentBook.condition,
-            price: currentBook.price
-          });
+          id: currentBook.id,
+          store: currentBook.store,
+          title: currentBook.title,
+          author: currentBook.author,
+          pubYear: currentBook.pubYear,
+          gender: currentBook.gender,
+          pages: currentBook.pages,
+          editorial: currentBook.editorial,
+          issbn: currentBook.issbn,
+          language: currentBook.language,
+          condition: currentBook.condition,
+          price: currentBook.price
+        });
       })
       .catch(error => {
-        console.error('Error fetching admins:', error);
+        console.error('Error fetching books:', error);
       });
   }, [currentIndex]); // Ejecutar cuando el currentIndex cambie
 
@@ -93,13 +94,32 @@ export function AdminBooks() {
     <div className="container content">
       {/* Encabezado de la página */}
       <h1>Manejo de Libros</h1>
+            
+      {/* Botón para agregar un nuevo libro */}
+      <button className="btn btn-primary mb-3" onClick={() => setShowForm(!showForm)}>Agregar un nuevo libro</button>
+            
+      {/* Mostrar el formulario si showForm es true */}
+      {showForm && (
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Título:</label>
+            <input type="text" className="form-control" name="title" value={formData.title} onChange={handleChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Autor:</label>
+            <input type="text" className="form-control" name="author" value={formData.author} onChange={handleChange} />
+          </div>
+          {/* Agregar más campos del formulario según sea necesario */}
+          <button type="submit" className="btn btn-primary">Guardar</button>
+        </form>
+      )}
 
       {/* Contenido principal */}
       <div className="slider">
-        {/* Botón para desplazarse al admin anterior */}
+        {/* Botón para desplazarse al libro anterior */}
         <button className="button" onClick={prevBook}>&#10094;</button>
 
-        {/* Detalles del admin actual */}
+        {/* Detalles del libro actual */}
         <div className="book-details">
           {/* Mostrar la imagen del libro si existe */}
           <img className="newsImage" src={books[currentIndex]?.image} alt="imagen del libro" />
@@ -119,13 +139,15 @@ export function AdminBooks() {
           <p>Condición: {books[currentIndex]?.condition}</p>
           <p>Precio: {books[currentIndex]?.price}</p>
         </div>
-        {/* Botón para desplazarse al siguiente admin */}
+        {/* Botón para desplazarse al siguiente libro */}
         <button className="button" onClick={nextBook}>&#10095;</button>
       </div>
       <br />
       <br />
       <div>
         <h2>Actualizar información</h2>
+       
+
         {formData && (
         <form onSubmit={handleSubmit}>
           <label>
