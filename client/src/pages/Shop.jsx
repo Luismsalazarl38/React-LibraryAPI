@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar estilos de Bootstrap
+import { Alert } from 'react-bootstrap'; // Importar el componente de alerta de Bootstrap
 
 export function Shop() {
   const [books, setBooks] = useState([]);
@@ -8,6 +9,8 @@ export function Shop() {
   const [client, setClient] = useState(null); // Agregamos el estado para el cliente
   const [cardDetails, setCardDetails] = useState({}); // Estado para almacenar detalles de la tarjeta
   const [selectedBookId, setSelectedBookId] = useState(null); // Estado para controlar qué tarjeta está seleccionada
+  const [alertMessage, setAlertMessage] = useState(""); // Estado para el mensaje de alerta
+  const [alertVariant, setAlertVariant] = useState(""); // Estado para el tipo de alerta (success, danger, etc.)
 
   useEffect(() => {
     // Obtener la información del cliente al cargar el componente
@@ -40,11 +43,15 @@ export function Shop() {
       });
   
       if (response.status === 201) {
-        console.log('Reserva realizada con éxito');
+        setAlertMessage('Reserva realizada con éxito');
+        setAlertVariant('success');
       } else {
-        console.log('Error al realizar la reserva');
+        setAlertMessage('Error al realizar la reserva');
+        setAlertVariant('danger');
       }
     } catch (error) {
+      setAlertMessage('Error al realizar la reserva');
+      setAlertVariant('danger');
       console.error('Error al realizar la reserva:', error);
     }
   };
@@ -54,7 +61,8 @@ export function Shop() {
     try {
       // Verificar si se ha cargado la información del cliente
       if (!client) {
-        console.error('No se ha cargado la información del cliente.');
+        setAlertMessage('No se ha cargado la información del cliente.');
+        setAlertVariant('danger');
         return;
       }
 
@@ -68,22 +76,57 @@ export function Shop() {
       });
 
       if (response.status === 201) {
-        console.log('Compra realizada con éxito');
+        setAlertMessage('Compra realizada con éxito');
+        setAlertVariant('success');
       } else {
-        console.log('Error al realizar la compra');
+        setAlertMessage('Error al realizar la compra');
+        setAlertVariant('danger');
       }
     } catch (error) {
+      setAlertMessage('Error al realizar la compra');
+      setAlertVariant('danger');
       console.error('Error al realizar la compra:', error);
     }
   };
 
-  const handlePaymentSubmit = async (e, bookId) => { // <-- Agrega bookId como argumento
+  const handlePaymentSubmit = async (e, bookId) => {
     e.preventDefault();
-    // Aquí puedes implementar la lógica para enviar los detalles de la tarjeta al backend
-    console.log('Detalles de la tarjeta:', cardDetails);
-    // Luego de enviar los detalles de la tarjeta, realizar la compra
-    await handleBuy(bookId); // <-- Utiliza el bookId pasado como argumento
+  
+    // Validar el número de tarjeta
+    if (cardDetails.cardNumber.length !== 13 || isNaN(cardDetails.cardNumber)) {
+      setAlertMessage('El número de tarjeta debe ser de 13 dígitos y solo números.');
+      setAlertVariant('danger');
+      return;
+    }
+  
+    // Validar el mes de expiración
+    const expiryMonth = parseInt(cardDetails.expiryMonth);
+    if (expiryMonth < 1 || expiryMonth > 12 || isNaN(expiryMonth)) {
+      setAlertMessage('El mes de expiración debe ser un número entre 1 y 12.');
+      setAlertVariant('danger');
+      return;
+    }
+  
+    // Validar el año de expiración
+    const currentYear = new Date().getFullYear();
+    const expiryYear = parseInt(cardDetails.expiryYear);
+    if (expiryYear <= currentYear || isNaN(expiryYear)) {
+      setAlertMessage('El año de expiración debe ser un año superior al actual.');
+      setAlertVariant('danger');
+      return;
+    }
+  
+    // Validar el código de seguridad
+    if (cardDetails.securityCode.length !== 3 || isNaN(cardDetails.securityCode)) {
+      setAlertMessage('El código de seguridad debe ser un número de 3 dígitos.');
+      setAlertVariant('danger');
+      return;
+    }
+  
+    // Si pasa todas las validaciones, realizar la compra
+    await handleBuy(bookId);
   };
+  
 
   const filteredBooks = books.filter(book =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,6 +152,13 @@ export function Shop() {
           />
         </div>
       </div>
+
+      {/* Mostrar la alerta si hay un mensaje */}
+      {alertMessage && (
+        <Alert variant={alertVariant} onClose={() => setAlertMessage("")} dismissible>
+          {alertMessage}
+        </Alert>
+      )}
 
       <div className="row row-cols-1 row-cols-md-3 g-4">
         {filteredBooks.map((book, index) => (
