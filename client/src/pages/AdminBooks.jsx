@@ -21,7 +21,7 @@ export function AdminBooks() {
   });
   const [showForm, setShowForm] = useState(false); // Estado para controlar la visibilidad del formulario
   const [newBookData, setNewBookData] = useState({
-    store: '', // Agregar el campo store
+    store: '',
     title: '',
     author: '',
     pubYear: '',
@@ -33,7 +33,7 @@ export function AdminBooks() {
     condition: '',
     price: '',
     pubDate: '',
-    image: null // Agregar el campo image
+    image: null
   });
 
   // Estado para controlar el índice del libro actual
