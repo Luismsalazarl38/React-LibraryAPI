@@ -16,9 +16,25 @@ export function AdminBooks() {
     issbn: '',
     language: '',
     condition: '',
-    price: ''
+    price: '',
+    pubDate: ''
   });
   const [showForm, setShowForm] = useState(false); // Estado para controlar la visibilidad del formulario
+  const [newBookData, setNewBookData] = useState({
+    store: '', // Agregar el campo store
+    title: '',
+    author: '',
+    pubYear: '',
+    gender: '',
+    pages: '',
+    editorial: '',
+    issbn: '',
+    language: '',
+    condition: '',
+    price: '',
+    pubDate: '',
+    image: null // Agregar el campo image
+  });
 
   // Estado para controlar el índice del libro actual
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,7 +51,16 @@ export function AdminBooks() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value !== undefined ? value : '' });
+  };
+
+  const handleNewBookChange = (event) => {
+    const { name, value, files } = event.target;
+    if (name === 'image') {
+      setNewBookData({ ...newBookData, [name]: files[0] });
+    } else {
+      setNewBookData({ ...newBookData, [name]: value !== undefined ? value : '' });
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -61,6 +86,41 @@ export function AdminBooks() {
       }
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
+    }
+  };
+
+  const handleNewBookSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('store', newBookData.store);
+      formData.append('title', newBookData.title);
+      formData.append('author', newBookData.author);
+      formData.append('pubYear', newBookData.pubYear);
+      formData.append('gender', newBookData.gender);
+      formData.append('pages', newBookData.pages);
+      formData.append('editorial', newBookData.editorial);
+      formData.append('issbn', newBookData.issbn);
+      formData.append('language', newBookData.language);
+      formData.append('pubDate', newBookData.pubDate);
+      formData.append('condition', newBookData.condition);
+      formData.append('price', newBookData.price);
+      if (newBookData.image) {
+        formData.append('image', newBookData.image);
+      }
+
+      const response = await axios.post('http://localhost:8000/manage/books/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 201) {
+        window.location.reload();
+      } else {
+      }
+    } catch (error) {
+      console.error('Error al crear el nuevo libro:', error);
     }
   };
 
@@ -96,22 +156,147 @@ export function AdminBooks() {
       <h1>Manejo de Libros</h1>
             
       {/* Botón para agregar un nuevo libro */}
-      <button className="btn btn-primary mb-3" onClick={() => setShowForm(!showForm)}>Agregar un nuevo libro</button>
-            
-      {/* Mostrar el formulario si showForm es true */}
+      <button className="btn btn-primary mb-3" onClick={() => setShowForm(!showForm)}>
+        {showForm ? 'Cancelar' : 'Agregar un nuevo libro'}
+      </button>
+
+      {/* Mostrar el formulario de creación si showForm es true */}
       {showForm && (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleNewBookSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Tienda:</label>
+            <input
+              type="text"
+              className="form-control"
+              name="store"
+              value={newBookData.store}
+              onChange={handleNewBookChange}
+            />
+          </div>
           <div className="mb-3">
             <label className="form-label">Título:</label>
-            <input type="text" className="form-control" name="title" value={formData.title} onChange={handleChange} />
+            <input
+              type="text"
+              className="form-control"
+              name="title"
+              value={newBookData.title}
+              onChange={handleNewBookChange}
+            />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Autor:</label>
-            <input type="text" className="form-control" name="author" value={formData.author} onChange={handleChange} />
-          </div>
-          {/* Agregar más campos del formulario según sea necesario */}
-          <button type="submit" className="btn btn-primary">Guardar</button>
-        </form>
+        <div className="mb-3">
+          <label className="form-label">Autor:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="author"
+            value={newBookData.author}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Año de Publicación:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="pubYear"
+            value={newBookData.pubYear}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Género:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="gender"
+            value={newBookData.gender}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Número de Páginas:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="pages"
+            value={newBookData.pages}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Editorial:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="editorial"
+            value={newBookData.editorial}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">ISSBN:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="issbn"
+            value={newBookData.issbn}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Idioma:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="language"
+            value={newBookData.language}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Fecha de Publicación:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="pubDate"
+            value={newBookData.pubDate}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Condición:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="condition"
+            value={newBookData.condition}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Precio:</label>
+          <input
+            type="text"
+            className="form-control"
+            name="price"
+            value={newBookData.price}
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Imagen:</label>
+          <input
+            type="file"
+            className="form-control"
+            name="image"
+            onChange={handleNewBookChange}
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Crear nuevo libro
+        </button>
+      </form>
+      
       )}
 
       {/* Contenido principal */}
@@ -171,7 +356,7 @@ export function AdminBooks() {
           </label>
           <br />
           <label>
-            No. de Páginas:
+            No. de Páginas
             <input type="text" name="pages" value={formData.pages} onChange={handleChange} />
           </label>
           <br />
