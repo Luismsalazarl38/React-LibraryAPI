@@ -15,6 +15,7 @@ import { AdminStores } from "./pages/AdminStores";
 import { RootProfile } from "./pages/RootProfile";
 import { Contact } from "./pages/Contact";
 import { AboutUs } from "./pages/AboutUs";
+import { Tarjetas } from "./pages/Tarjetas";
 import { Shop } from "./pages/Shop";
 import Reservations from "./pages/reservations"; // Importa el componente Reservations
 
@@ -33,6 +34,7 @@ function App() {
         <Route key="adminlogin" path="/adminlogin" element={<AdminLoginPage />} />
         <Route key="clientprofile" path="/clientprofile" element={<ClientProfile />} />
         <Route key="adminprofile" path="/adminprofile" element={<AdminProfile />} />
+        <Route key="Tarjetas" path="/Tarjetas" element={<Tarjetas />} />
         <Route key="adminbooks" path="/adminbooks" element={<AdminBooks />} />
         <Route key="adminstores" path="/adminstores" element={<AdminStores />} />
         <Route key="rootprofile" path="/rootprofile" element={<RootProfile />} />

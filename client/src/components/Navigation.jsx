@@ -123,7 +123,12 @@ export function Navigation() {
                   </li>
                   <li className="nav-item">
                     <Link to="/reservations" className="nav-link">
-                      Reservas
+                      Historial
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/Tarjetas" className="nav-link">
+                      Tarjetas
                     </Link>
                   </li>
                 </>

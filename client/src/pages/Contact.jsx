@@ -13,7 +13,7 @@ export function Contact() {
         <br />
         <br />
         
-        <h1>Lorem de contact</h1>
+        <h1>Uy no que berraquera de pagina</h1>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus necessitatibus architecto et, quisquam error omnis sed obcaecati exercitationem dolor tenetur labore laborum, delectus quod consequuntur adipisci vel magni ipsa aut!</p>
     </div>
     )
