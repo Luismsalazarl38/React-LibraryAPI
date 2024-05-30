@@ -88,7 +88,7 @@ export function Tarjetas({ clientId }) {
             <button type="submit" className="btn btn-success">Crear Tarjeta</button>
           </form>
         </div>
-      )}
+      )}    
       <div className="row">
         {tarjetas.map((tarjeta) => (
           <div key={tarjeta.id} className="col-md-4 mb-4">

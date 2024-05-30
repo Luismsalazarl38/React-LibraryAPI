@@ -9,7 +9,14 @@ export function AdminStores() {
     openingTime: '',
     closingTime: '',
   });
+  const [newStoreData, setNewStoreData] = useState({
+    address: '',
+    openingTime: '',
+    closingTime: '',
+  });
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showForm, setShowForm] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const prevStore = () => {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? stores.length - 1 : prevIndex - 1));
@@ -24,22 +31,70 @@ export function AdminStores() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleNewStoreChange = (event) => {
+    const { name, value } = event.target;
+    setNewStoreData({ ...newStoreData, [name]: value });
+  };
+
+  const validateForm = (data) => {
+    const errors = {};
+    if (!data.address) {
+      errors.address = "La dirección es obligatoria";
+    }
+    if (!data.openingTime) {
+      errors.openingTime = "El horario de apertura es obligatorio";
+    }
+    if (!data.closingTime) {
+      errors.closingTime = "El horario de cierre es obligatorio";
+    }
+    return errors;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const schedule = `${formData.openingTime} - ${formData.closingTime}`;
-      const userData = {
-        address: formData.address,
-        schedule,
-      };
-      const response = await axios.patch(`http://localhost:8000/manage/stores/${formData.id}/`, userData);
-      if (response) {
-        window.location.reload();
-      } else {
-        window.location.reload();
+    const errors = validateForm(formData);
+    setErrors(errors);
+    if (Object.keys(errors).length === 0) {
+      try {
+        const schedule = `${formData.openingTime} - ${formData.closingTime}`;
+        const userData = {
+          address: formData.address,
+          schedule,
+        };
+        const response = await axios.patch(`http://localhost:8000/manage/stores/${formData.id}/`, userData);
+        if (response) {
+          window.location.reload();
+        } else {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error al enviar el formulario:', error);
       }
-    } catch (error) {
-      console.error('Error al enviar el formulario:', error);
+    }
+  };
+
+  const handleNewStoreSubmit = async (event) => {
+    event.preventDefault();
+    const errors = validateForm(newStoreData);
+    setErrors(errors);
+    if (Object.keys(errors).length === 0) {
+      try {
+        const schedule = `${newStoreData.openingTime} - ${newStoreData.closingTime}`;
+        const userData = {
+          address: newStoreData.address,
+          schedule,
+        };
+        const response = await axios.post('http://localhost:8000/manage/stores/', userData, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (response.status === 201) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error al crear la nueva tienda:', error);
+      }
     }
   };
 
@@ -63,6 +118,54 @@ export function AdminStores() {
   return (
     <div className="container content">
       <h1>Manejo de Tiendas</h1>
+      <button className="btn btn-primary mb-3" onClick={() => setShowForm(!showForm)}>
+        {showForm ? "Cancelar" : "Agregar una nueva tienda"}
+      </button>
+
+      {showForm && (
+        <form onSubmit={handleNewStoreSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Dirección:</label>
+            <input
+              type="text"
+              className="form-control"
+              name="address"
+              value={newStoreData.address}
+              onChange={handleNewStoreChange}
+              required
+            />
+            {errors.address && <p className="text-danger">{errors.address}</p>}
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Horario de apertura:</label>
+            <input
+              type="time"
+              className="form-control"
+              name="openingTime"
+              value={newStoreData.openingTime}
+              onChange={handleNewStoreChange}
+              required
+            />
+            {errors.openingTime && <p className="text-danger">{errors.openingTime}</p>}
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Horario de cierre:</label>
+            <input
+              type="time"
+              className="form-control"
+              name="closingTime"
+              value={newStoreData.closingTime}
+              onChange={handleNewStoreChange}
+              required
+            />
+            {errors.closingTime && <p className="text-danger">{errors.closingTime}</p>}
+          </div>
+          <button type="submit" className="btn btn-primary">
+            Crear nueva tienda
+          </button>
+        </form>
+      )}
+
       <div className="slider">
         <button className="button" onClick={prevStore}>&#10094;</button>
         <div className="book-details">
@@ -72,8 +175,7 @@ export function AdminStores() {
         </div>
         <button className="button" onClick={nextStore}>&#10095;</button>
       </div>
-      <br />
-      <br />
+
       <div>
         <h2>Actualizar información</h2>
         {formData && (
@@ -86,6 +188,7 @@ export function AdminStores() {
                 value={formData.address}
                 onChange={handleChange}
               />
+              {errors.address && <p className="text-danger">{errors.address}</p>}
             </label>
             <br />
             <label>
@@ -96,6 +199,7 @@ export function AdminStores() {
                 value={formData.openingTime}
                 onChange={handleChange}
               />
+              {errors.openingTime && <p className="text-danger">{errors.openingTime}</p>}
             </label>
             <br />
             <label>
@@ -106,18 +210,14 @@ export function AdminStores() {
                 value={formData.closingTime}
                 onChange={handleChange}
               />
+              {errors.closingTime && <p className="text-danger">{errors.closingTime}</p>}
             </label>
             <br />
             <button type="submit">Actualizar</button>
-            <br />
-            <br />
-            <h3>No olvides enviar los datos completos</h3>
           </form>
         )}
       </div>
-      <br />
-      <br />
-      <br />
+
       <footer className="footer">
         <p>Derechos de autor © 2024. Todos los derechos reservados.</p>
       </footer>

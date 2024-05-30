@@ -10,7 +10,7 @@ export function AdminBooks() {
     title: "",
     author: "",
     pubYear: "",
-    gender: "",
+    gender: [],
     pages: "",
     editorial: "",
     issbn: "",
@@ -25,7 +25,7 @@ export function AdminBooks() {
     title: "",
     author: "",
     pubYear: "",
-    gender: "",
+    gender: [],
     pages: "",
     editorial: "",
     issbn: "",
@@ -36,6 +36,7 @@ export function AdminBooks() {
     image: null
   });
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [errors, setErrors] = useState({});
 
   const prevBook = () => {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? books.length - 1 : prevIndex - 1));
@@ -47,26 +48,57 @@ export function AdminBooks() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value !== undefined ? value : "" });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleNewBookChange = (event) => {
-    const { name, value, files } = event.target;
-    if (name === "image") {
+    const { name, value, files, type } = event.target;
+    if (type === "checkbox") {
+      const newGender = [...newBookData.gender];
+      if (event.target.checked) {
+        newGender.push(value);
+      } else {
+        const index = newGender.indexOf(value);
+        if (index > -1) {
+          newGender.splice(index, 1);
+        }
+      }
+      setNewBookData({ ...newBookData, [name]: newGender });
+    } else if (name === "image") {
       setNewBookData({ ...newBookData, [name]: files[0] });
     } else {
-      setNewBookData({ ...newBookData, [name]: value !== undefined ? value : "" });
+      setNewBookData({ ...newBookData, [name]: value });
     }
+  };
+
+  const validateForm = (data) => {
+    let errors = {};
+    if (!data.title) errors.title = "El título es obligatorio";
+    if (!data.author) errors.author = "El autor es obligatorio";
+    if (!data.pubYear || isNaN(data.pubYear)) errors.pubYear = "El año de publicación debe ser un número";
+    if (!data.pages || isNaN(data.pages)) errors.pages = "El número de páginas debe ser un número";
+    if (!data.issbn || isNaN(data.issbn)) errors.issbn = "El ISSBN debe ser un número";
+    if (!data.language) errors.language = "El idioma es obligatorio";
+    if (!data.condition) errors.condition = "La condición es obligatoria";
+    if (!data.price || isNaN(data.price)) errors.price = "El precio debe ser un número";
+    if (!data.gender || data.gender.length === 0) errors.gender = "Debe seleccionar al menos un género";
+
+    return errors;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const validationErrors = validateForm(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       const userData = {
         title: formData.title,
         author: formData.author,
         pubYear: formData.pubYear,
-        gender: formData.gender,
+        gender: formData.gender.join(", "),
         pages: formData.pages,
         editorial: formData.editorial,
         issbn: formData.issbn,
@@ -77,8 +109,6 @@ export function AdminBooks() {
       const response = await axios.patch(`http://localhost:8000/manage/books/${formData.id}/`, userData);
       if (response) {
         window.location.reload();
-      } else {
-        window.location.reload();
       }
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
@@ -87,22 +117,19 @@ export function AdminBooks() {
 
   const handleNewBookSubmit = async (event) => {
     event.preventDefault();
+    const validationErrors = validateForm(newBookData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       const formData = new FormData();
-      formData.append("store", newBookData.store);
-      formData.append("title", newBookData.title);
-      formData.append("author", newBookData.author);
-      formData.append("pubYear", newBookData.pubYear);
-      formData.append("gender", newBookData.gender);
-      formData.append("pages", newBookData.pages);
-      formData.append("editorial", newBookData.editorial);
-      formData.append("issbn", newBookData.issbn);
-      formData.append("language", newBookData.language);
-      formData.append("pubDate", newBookData.pubDate);
-      formData.append("condition", newBookData.condition);
-      formData.append("price", newBookData.price);
-      if (newBookData.image) {
-        formData.append("image", newBookData.image);
+      for (const key in newBookData) {
+        if (key === "gender") {
+          formData.append(key, newBookData[key].join(", "));
+        } else {
+          formData.append(key, newBookData[key]);
+        }
       }
 
       const response = await axios.post("http://localhost:8000/manage/books/", formData, {
@@ -130,7 +157,7 @@ export function AdminBooks() {
           title: currentBook.title,
           author: currentBook.author,
           pubYear: currentBook.pubYear,
-          gender: currentBook.gender,
+          gender: currentBook.gender.split(", "),
           pages: currentBook.pages,
           editorial: currentBook.editorial,
           issbn: currentBook.issbn,
@@ -186,6 +213,7 @@ export function AdminBooks() {
               onChange={handleNewBookChange}
               required
             />
+            {errors.title && <p className="text-danger">{errors.title}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Autor:</label>
@@ -197,6 +225,7 @@ export function AdminBooks() {
               onChange={handleNewBookChange}
               required
             />
+            {errors.author && <p className="text-danger">{errors.author}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Año de Publicación:</label>
@@ -208,17 +237,26 @@ export function AdminBooks() {
               onChange={handleNewBookChange}
               required
             />
+            {errors.pubYear && <p className="text-danger">{errors.pubYear}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Género:</label>
-            <input
-              type="text"
-              className="form-control"
-              name="gender"
-              value={newBookData.gender}
-              onChange={handleNewBookChange}
-              required
-            />
+            <div>
+              {["Ficción", "No Ficción", "Fantasía", "Misterio", "Ciencia Ficción", "Biografía"].map((genre) => (
+                <div key={genre} className="form-check form-check-inline">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    name="gender"
+                    value={genre}
+                    checked={newBookData.gender.includes(genre)}
+                    onChange={handleNewBookChange}
+                  />
+                  <label className="form-check-label">{genre}</label>
+                </div>
+              ))}
+            </div>
+            {errors.gender && <p className="text-danger">{errors.gender}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Número de Páginas:</label>
@@ -230,6 +268,7 @@ export function AdminBooks() {
               onChange={handleNewBookChange}
               required
             />
+            {errors.pages && <p className="text-danger">{errors.pages}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Editorial:</label>
@@ -239,51 +278,52 @@ export function AdminBooks() {
               name="editorial"
               value={newBookData.editorial}
               onChange={handleNewBookChange}
-              required
             />
           </div>
           <div className="mb-3">
             <label className="form-label">ISSBN:</label>
             <input
-              type="text"
+              type="number"
               className="form-control"
               name="issbn"
               value={newBookData.issbn}
               onChange={handleNewBookChange}
               required
             />
+            {errors.issbn && <p className="text-danger">{errors.issbn}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Idioma:</label>
-            <input
-              type="text"
-              className="form-control"
+            <select
+              className="form-select"
               name="language"
               value={newBookData.language}
               onChange={handleNewBookChange}
               required
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Fecha de Publicación:</label>
-            <input
-              type="date"
-              className="form-control"
-              name="pubDate"
-              value={newBookData.pubDate}
-              onChange={handleNewBookChange}
-              required
-            />
+            >
+              <option value="">Seleccionar Idioma</option>
+              <option value="Español">Español</option>
+              <option value="Inglés">Inglés</option>
+              <option value="Francés">Francés</option>
+              <option value="Alemán">Alemán</option>
+              <option value="Chino">Chino</option>
+            </select>
+            {errors.language && <p className="text-danger">{errors.language}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Condición:</label>
-            <input
-              type="text"
-              className="form-control"
+            <select
+              className="form-select"
               name="condition"
               value={newBookData.condition}
               onChange={handleNewBookChange}
-            />
+              required
+            >
+              <option value="">Seleccionar Condición</option>
+              <option value="Nuevo">Nuevo</option>
+              <option value="Usado">Usado</option>
+            </select>
+            {errors.condition && <p className="text-danger">{errors.condition}</p>}
           </div>
           <div className="mb-3">
             <label className="form-label">Precio:</label>
@@ -295,6 +335,17 @@ export function AdminBooks() {
               onChange={handleNewBookChange}
               required
             />
+            {errors.price && <p className="text-danger">{errors.price}</p>}
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Fecha de Publicación:</label>
+            <input
+              type="date"
+              className="form-control"
+              name="pubDate"
+              value={newBookData.pubDate}
+              onChange={handleNewBookChange}
+            />
           </div>
           <div className="mb-3">
             <label className="form-label">Imagen:</label>
@@ -305,104 +356,170 @@ export function AdminBooks() {
               onChange={handleNewBookChange}
             />
           </div>
-          <button type="submit" className="btn btn-primary">
-            Crear nuevo libro
-          </button>
+          <button type="submit" className="btn btn-primary">Crear nuevo libro</button>
         </form>
       )}
 
-      <div className="slider">
-        <button className="button" onClick={prevBook}>&#10094;</button>
-        <div className="book-details">
-          <img className="newsImage" src={books[currentIndex]?.image} alt="imagen del libro" />
-          <h2>{books[currentIndex]?.title}</h2>
-          <p>ID Inventario: {books[currentIndex]?.id}</p>
-          <p>Tienda: {books[currentIndex]?.store}</p>
-          <p>Título: {books[currentIndex]?.title}</p>
-          <p>Autor: {books[currentIndex]?.author}</p>
-          <p>Género: {books[currentIndex]?.gender}</p>
-          <p>Precio: ${books[currentIndex]?.price}</p>
-          <p>Año de Publicación: {books[currentIndex]?.pubYear}</p>
-          <p>Fecha de Publicación: {books[currentIndex]?.pubDate}</p>
-          <p>Páginas: {books[currentIndex]?.pages}</p>
-          <p>Editorial: {books[currentIndex]?.editorial}</p>
-          <p>ISSBN: {books[currentIndex]?.issbn}</p>
-          <p>Idioma: {books[currentIndex]?.language}</p>
-          <p>Condición: {books[currentIndex]?.condition}</p>
-          <p>Precio: {books[currentIndex]?.price}</p>
-        </div>
-        <button className="button" onClick={nextBook}>&#10095;</button>
-      </div>
-
-      <br />
-      <br />
-      <div>
-        <h2>Actualizar información</h2>
-        {formData && (
-          <form onSubmit={handleSubmit}>
-            <label>
-              Título:
-              <input type="text" name="title" value={formData.title} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              Autor:
-              <input type="text" name="author" value={formData.author} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              Año de Publicación:
-              <input type="text" name="pubYear" value={formData.pubYear} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              Género:
-              <input type="text" name="gender" value={formData.gender} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              No. de Páginas
-              <input type="text" name="pages" value={formData.pages} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              Editorial:
-              <input type="text" name="editorial" value={formData.editorial} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              ISSBN:
-              <input type="text" name="issbn" value={formData.issbn} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              Idioma:
-              <input type="text" name="language" value={formData.language} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              Condición:
-              <input type="text" name="condition" value={formData.condition} onChange={handleChange} />
-            </label>
-            <br />
-            <label>
-              Precio:
-              <input type="text" name="price" value={formData.price} onChange={handleChange} />
-            </label>
-            <br />
-            <button type="submit">Actualizar</button>
-            <br />
-            <br />
-            <h3>No olvides enviar los datos completos</h3>
-          </form>
-        )}
-      </div>
-      <br />
-      <br />
-      <br />
-      <footer className="footer">
-        <p>Derechos de autor © 2024. Todos los derechos reservados.</p>
-      </footer>
+      {books.length > 0 && (
+        <>
+          <div className="slider">
+            <button className="button" onClick={prevBook}>&#10094;</button>
+            <div className="book-details">
+              <img className="newsImage" src={books[currentIndex]?.image} alt="imagen del libro" />
+              <h2>{books[currentIndex]?.title}</h2>
+              <p>ID Inventario: {books[currentIndex]?.id}</p>
+              <p>Tienda: {books[currentIndex]?.store}</p>
+              <p>Título: {books[currentIndex]?.title}</p>
+              <p>Autor: {books[currentIndex]?.author}</p>
+              <p>Género: {books[currentIndex]?.gender}</p>
+              <p>Precio: ${books[currentIndex]?.price}</p>
+              <p>Año de Publicación: {books[currentIndex]?.pubYear}</p>
+              <p>Fecha de Publicación: {books[currentIndex]?.pubDate}</p>
+              <p>Páginas: {books[currentIndex]?.pages}</p>
+              <p>Editorial: {books[currentIndex]?.editorial}</p>
+              <p>ISSBN: {books[currentIndex]?.issbn}</p>
+              <p>Idioma: {books[currentIndex]?.language}</p>
+              <p>Condición: {books[currentIndex]?.condition}</p>
+              <p>Precio: {books[currentIndex]?.price}</p>
+            </div>
+            <button className="button" onClick={nextBook}>&#10095;</button>
+          </div>
+          <div>
+            <h2>Actualizar información</h2>
+            <form onSubmit={handleSubmit}>
+              <label>
+                Título:
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                />
+                {errors.title && <p className="text-danger">{errors.title}</p>}
+              </label>
+              <label>
+                Autor:
+                <input
+                  type="text"
+                  name="author"
+                  value={formData.author}
+                  onChange={handleChange}
+                />
+                {errors.author && <p className="text-danger">{errors.author}</p>}
+              </label>
+              <label>
+                Año de Publicación:
+                <input
+                  type="number"
+                  name="pubYear"
+                  value={formData.pubYear}
+                  onChange={handleChange}
+                />
+                {errors.pubYear && <p className="text-danger">{errors.pubYear}</p>}
+              </label>
+              <label>
+                Género:
+                <div>
+                  {["Ficción", "No Ficción", "Fantasía", "Misterio", "Ciencia Ficción", "Biografía"].map((genre) => (
+                    <div key={genre} className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        name="gender"
+                        value={genre}
+                        checked={formData.gender.includes(genre)}
+                        onChange={(event) => {
+                          const newGender = [...formData.gender];
+                          if (event.target.checked) {
+                            newGender.push(genre);
+                          } else {
+                            const index = newGender.indexOf(genre);
+                            if (index > -1) {
+                              newGender.splice(index, 1);
+                            }
+                          }
+                          setFormData({ ...formData, gender: newGender });
+                        }}
+                      />
+                      <label className="form-check-label">{genre}</label>
+                    </div>
+                  ))}
+                </div>
+                {errors.gender && <p className="text-danger">{errors.gender}</p>}
+              </label>
+              <label>
+                Número de Páginas:
+                <input
+                  type="number"
+                  name="pages"
+                  value={formData.pages}
+                  onChange={handleChange}
+                />
+                {errors.pages && <p className="text-danger">{errors.pages}</p>}
+              </label>
+              <label>
+                Editorial:
+                <input
+                  type="text"
+                  name="editorial"
+                  value={formData.editorial}
+                  onChange={handleChange}
+                />
+              </label>
+              <label>
+                ISSBN:
+                <input
+                  type="number"
+                  name="issbn"
+                  value={formData.issbn}
+                  onChange={handleChange}
+                />
+                {errors.issbn && <p className="text-danger">{errors.issbn}</p>}
+              </label>
+              <label>
+                Idioma:
+                <select
+                  name="language"
+                  value={formData.language}
+                  onChange={handleChange}
+                >
+                  <option value="">Seleccionar Idioma</option>
+                  <option value="Español">Español</option>
+                  <option value="Inglés">Inglés</option>
+                  <option value="Francés">Francés</option>
+                  <option value="Alemán">Alemán</option>
+                  <option value="Chino">Chino</option>
+                </select>
+                {errors.language && <p className="text-danger">{errors.language}</p>}
+              </label>
+              <label>
+                Condición:
+                <select
+                  name="condition"
+                  value={formData.condition}
+                  onChange={handleChange}
+                >
+                  <option value="">Seleccionar Condición</option>
+                  <option value="Nuevo">Nuevo</option>
+                  <option value="Usado">Usado</option>
+                </select>
+                {errors.condition && <p className="text-danger">{errors.condition}</p>}
+              </label>
+              <label>
+                Precio:
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                />
+                {errors.price && <p className="text-danger">{errors.price}</p>}
+              </label>
+              <button type="submit">Actualizar</button>
+            </form>
+          </div>
+        </>
+      )}
     </div>
   );
 }
