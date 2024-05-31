@@ -54,6 +54,7 @@ export function Shop() {
 
       if (response.status === 201) {
         setAlertMessage('Reserva realizada con éxito');
+        await axios.patch(`http://localhost:8000/manage/books/${book.id}/`, { reserved: true });
         setAlertVariant('success');
       } else {
         setAlertMessage('Error al realizar la reserva');
@@ -96,6 +97,7 @@ export function Shop() {
         // Actualizar el saldo de la tarjeta
         const newWallet = selectedCard.wallet - book.price;
         await axios.patch(`http://localhost:8000/manage/cards/${selectedCard.id}/`, { wallet: newWallet });
+        await axios.patch(`http://localhost:8000/manage/books/${book.id}/`, { sold: true });
 
         setAlertMessage('Compra realizada con éxito');
         setAlertVariant('success');
