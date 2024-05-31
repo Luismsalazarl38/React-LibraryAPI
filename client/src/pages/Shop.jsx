@@ -93,8 +93,14 @@ export function Shop() {
       });
 
       if (response.status === 201) {
+        // Actualizar el saldo de la tarjeta
+        const newWallet = selectedCard.wallet - book.price;
+        await axios.patch(`http://localhost:8000/manage/cards/${selectedCard.id}/`, { wallet: newWallet });
+
         setAlertMessage('Compra realizada con éxito');
         setAlertVariant('success');
+        // Actualizar la tarjeta en el estado clientCards
+        setClientCards(prevCards => prevCards.map(card => card.id === selectedCard.id ? { ...card, wallet: newWallet } : card));
       } else {
         setAlertMessage('Error al realizar la compra');
         setAlertVariant('danger');
