@@ -17,6 +17,7 @@ import { Contact } from "./pages/Contact";
 import { AboutUs } from "./pages/AboutUs";
 import { Tarjetas } from "./pages/Tarjetas";
 import { Shop } from "./pages/Shop";
+import { Chat } from "./pages/Chat";
 import Reservations from "./pages/reservations"; // Importa el componente Reservations
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -39,6 +40,7 @@ function App() {
         <Route key="adminstores" path="/adminstores" element={<AdminStores />} />
         <Route key="rootprofile" path="/rootprofile" element={<RootProfile />} />
         <Route key="contact" path="/contact" element={<Contact />} />
+        <Route key="Chat" path="/Chat" element={<Chat />} />
         <Route key="aboutus" path="/aboutus" element={<AboutUs />} />
         <Route key="shop" path="/shop" element={<Shop />} />
         <Route key="reservations" path='/reservations' element={<Reservations />} /> {/* Utiliza el componente Reservations */}

@@ -107,6 +107,11 @@ export function Navigation() {
                       Modificar Libros
                     </button>
                   </li>
+                  <li className="nav-item">
+                    <Link to="/Chat" className="nav-link">
+                      Chat
+                    </Link>
+                  </li>
                 </>
               )}
               {userType === 'client' && (
@@ -131,6 +136,12 @@ export function Navigation() {
                       Tarjetas
                     </Link>
                   </li>
+                  {/* Enlace a la página de chat para usuarios clientes */}
+                  <li className="nav-item">
+                    <Link to="/Chat" className="nav-link">
+                      Chat
+                    </Link>
+                  </li>
                 </>
               )}
             </>
@@ -152,3 +163,5 @@ export function Navigation() {
     </nav>
   );
 }
+
+export default Navigation;
