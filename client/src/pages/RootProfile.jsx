@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar estilos de Bootstrap
+import backendURL from "../config"; // Importa la variable backendURL desde el archivo config.js
+
 
 export function RootProfile() {
   // Estado para almacenar la lista de admins
@@ -42,7 +44,7 @@ export function RootProfile() {
         address: formData.address,
         birthplace: formData.birthplace
       };
-      const response = await axios.patch(`http://localhost:8000/users/admins/${formData.id}/`, userData);
+      const response = await axios.patch(`${backendURL}/users/admins/${formData.id}/`, userData);
       if (response) {
         window.location.reload();
       } else {
@@ -55,7 +57,7 @@ export function RootProfile() {
 
   // Función para cargar los admins desde el servidor
   useEffect(() => {
-    axios.get('http://localhost:8000/users/admins/')
+    axios.get(`${backendURL}/users/admins/`)
       .then(response => {
         setAdmins(response.data);
         const currentAdmin = response.data[currentIndex];

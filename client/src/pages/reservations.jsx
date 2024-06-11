@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import backendURL from '../config'; // Importa la variable backendURL desde el archivo config.js  
 
 function Reservations() {
   const [reservations, setReservations] = useState([]);
@@ -8,7 +9,7 @@ function Reservations() {
   const [isReservationsCollapsed, setIsReservationsCollapsed] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/manage/reservations/')
+    axios.get(`${backendURL}/manage/reservations/`)
       .then(response => {
         setReservations(response.data);
       })
@@ -16,7 +17,7 @@ function Reservations() {
         console.error('Error fetching reservations:', error);
       });
 
-    axios.get('http://localhost:8000/manage/sales/')
+      axios.get(`${backendURL}/manage/sales/`)
       .then(response => {
         setSales(response.data);
       })
@@ -30,7 +31,7 @@ function Reservations() {
       console.log(`Iniciando devolución para la venta con ID: ${saleId}`);
       
       setTimeout(async () => {
-        await axios.delete(`http://localhost:8000/manage/sales/${saleId}/`);
+        await axios.delete(`${backendURL}/manage/sales/${saleId}/`);
         setSales(prevSales => prevSales.filter(sale => sale.id !== saleId));
         console.log(`Venta con ID ${saleId} borrada después de la devolución`);
       }, 80000);
@@ -41,7 +42,7 @@ function Reservations() {
 
   const handleDeleteSale = async (saleId) => {
     try {
-      await axios.delete(`http://localhost:8000/manage/sales/${saleId}/`);
+      await axios.delete(`${backendURL}/manage/sales/${saleId}/`);
       setSales(prevSales => prevSales.filter(sale => sale.id !== saleId));
     } catch (error) {
       console.error('Error deleting sale:', error);
@@ -50,7 +51,7 @@ function Reservations() {
 
   const handleDeleteReservation = async (reservationId) => {
     try {
-      await axios.delete(`http://localhost:8000/manage/reservations/${reservationId}/`);
+      await axios.delete(`${backendURL}/manage/reservations/${reservationId}/`);
       setReservations(prevReservations => prevReservations.filter(reservation => reservation.id !== reservationId));
     } catch (error) {
       console.error('Error deleting reservation:', error);

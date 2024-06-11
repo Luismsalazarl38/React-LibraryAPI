@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import backendURL from "../config"; // Importa la variable backendURL desde el archivo config.js
+
 
 export function ClientProfile() {
     // Estado para almacenar los datos del usuario
@@ -70,7 +72,7 @@ export function ClientProfile() {
             const id = localStorage.getItem('id');
 
             // Realizar la solicitud GET al backend para obtener los datos del usuario
-            const response = await axios.get(`http://localhost:8000/users/clients/${id}`);
+            const response = await axios.get(`${backendURL}/users/clients/${id}`);
 
             // Almacenar los datos del usuario en el estado del componente
             setUsuario(response.data);
@@ -99,7 +101,7 @@ export function ClientProfile() {
                 dni: formData.dni,
                 address: addressString // Asignar la dirección concatenada
             };
-            const response = await axios.patch(`http://localhost:8000/users/clients/${id}/`, reqData);
+            const response = await axios.patch(`${backendURL}/users/clients/${id}/`, reqData);
             if (response) {
                 window.location.reload();
             } else {

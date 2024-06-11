@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import backendURL from '../config'; // Importa la variable backendURL desde el archivo config.js
+
 
 export function Chat() {
   const [messageContent, setMessageContent] = useState('');
@@ -17,9 +19,9 @@ export function Chat() {
     try {
       let response;
       if (userType === 'admin') {
-        response = await axios.get('http://localhost:8000/manage/chats/');
+        response = await axios.get(`${backendURL}/manage/chats/`);
       } else {
-        response = await axios.post('http://localhost:8000/manage/userchats/', {
+        response = await axios.post(`${backendURL}/manage/userchats/`, {
           client: idClient
         });
       }
@@ -31,7 +33,7 @@ export function Chat() {
 
   const fetchMessages = async (chatId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/manage/messages/?chat=${chatId}`);
+      const response = await axios.get(`${backendURL}/manage/messages/?chat=${chatId}`);
       setChatMessages(prevChatMessages => ({
         ...prevChatMessages,
         [chatId]: response.data.filter(message => message.chat === chatId)
@@ -43,7 +45,7 @@ export function Chat() {
 
   const createChat = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/manage/chats/', {
+      const response = await axios.post(`${backendURL}/manage/chats/`, {
         client: idClient
       });
       console.log('Chat creado:', response.data);
@@ -61,7 +63,7 @@ export function Chat() {
 
   const sendMessage = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/manage/messages/', {
+      const response = await axios.post(`${backendURL}/manage/messages/`, {
         content: messageContent,
         user: 1,
         usertype: userType,

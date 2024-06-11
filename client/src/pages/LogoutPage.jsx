@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import backendURL from '../config'; // Importa la variable backendURL desde el archivo config.js
+
 
 function LogoutPage() {
     const handleLogout = async () => {
@@ -14,7 +16,7 @@ function LogoutPage() {
             }
 
             // Realizamos la solicitud de logout con el token de acceso
-            const response = await axios.post('http://localhost:8000/users/logout/', null, {
+            const response = await axios.post(`${backendURL}/users/logout/`, null, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`  
                 }

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import backendURL from "../config"; // Importa la variable backendURL desde el archivo config.js
+
 
 export function Tarjetas({ clientId }) {
   const [formData, setFormData] = useState({
@@ -18,7 +20,7 @@ export function Tarjetas({ clientId }) {
   useEffect(() => {
     const fetchTarjetas = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/manage/cards/?client=${clientId}`);
+        const response = await axios.get(`${backendURL}/manage/cards/?client=${clientId}`);
         setTarjetas(response.data);
       } catch (error) {
         console.error("Error fetching tarjetas:", error);
@@ -71,14 +73,14 @@ export function Tarjetas({ clientId }) {
         client: id
       };
 
-      await axios.post("http://localhost:8000/manage/cards/", dataToSend, {
+      await axios.post(`${backendURL}/manage/cards/`, dataToSend, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
 
       alert("Tarjeta creada exitosamente");
-      const response = await axios.get(`http://localhost:8000/manage/cards/?client=${clientId}`);
+      const response = await axios.get(`${backendURL}/manage/cards/?client=${clientId}`);
       setTarjetas(response.data);
       setFormOpen(false);
     } catch (error) {
@@ -89,9 +91,9 @@ export function Tarjetas({ clientId }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/manage/cards/${id}/`);
+      await axios.delete(`${backendURL}/manage/cards/${id}/`);
       alert("Tarjeta eliminada exitosamente");
-      const response = await axios.get(`http://localhost:8000/manage/cards/?client=${clientId}`);
+      const response = await axios.get(`${backendURL}/manage/cards/?client=${clientId}`);
       setTarjetas(response.data);
     } catch (error) {
       console.error("Error al eliminar tarjeta:", error);

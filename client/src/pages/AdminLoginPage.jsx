@@ -2,6 +2,8 @@ import { useState } from 'react';
 import axios from "axios";
 import { Link } from 'react-router-dom';
 import '../index.css'; 
+import backendURL from '../config'; // Importa la variable backendURL desde el archivo config.js
+
 
 export function AdminLoginPage() {
     const [formData, setFormData] = useState({
@@ -20,7 +22,7 @@ export function AdminLoginPage() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8000/users/login/", formData);
+            const response = await axios.post(`${backendURL}/users/login/`, formData);
             console.log(response.data);
             // Redirigir al usuario a la página deseada después del inicio de sesión exitoso
         } catch (error) {

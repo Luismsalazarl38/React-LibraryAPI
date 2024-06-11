@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import backendURL from "../config"; // Importa la variable backendURL desde el archivo config.js
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar estilos de Bootstrap
 
 export function TaskPage() {
@@ -21,7 +22,7 @@ export function TaskPage() {
   
   // Función para cargar los libros desde el servidor
   useEffect(() => {
-    axios.get('http://localhost:8000/manage/books/')
+    axios.get(`${backendURL}/manage/books/`)
       .then(response => {
         setBooks(response.data);
       })

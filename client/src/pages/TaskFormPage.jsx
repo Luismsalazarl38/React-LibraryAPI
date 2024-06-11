@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import backendURL from "../config"; // Importa la variable backendURL desde el archivo config.js
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importar estilos de Bootstrap
 
 export function TaskFormPage() {
@@ -19,7 +20,7 @@ export function TaskFormPage() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8000/users/login/", formData);
+            const response = await axios.post(`${backendURL}/users/login/`, formData); // Utiliza la URL del backend desde config.js
             console.log(response.data);
             // Si la respuesta es exitosa, redirigir al usuario a otra página
             if (response.status === 200) {

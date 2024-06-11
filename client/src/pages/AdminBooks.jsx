@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import backendURL from '../config'; // Importa la variable backendURL desde el archivo config.js
+
 
 export function AdminBooks() {
   const [stores, setStores] = useState([]);
@@ -106,7 +108,7 @@ export function AdminBooks() {
         condition: formData.condition,
         price: formData.price
       };
-      const response = await axios.patch(`http://localhost:8000/manage/books/${formData.id}/`, userData);
+      const response = await axios.patch(`${backendURL}/manage/books/${formData.id}/`, userData);
       if (response) {
         window.location.reload();
       }
@@ -132,7 +134,7 @@ export function AdminBooks() {
         }
       }
 
-      const response = await axios.post("http://localhost:8000/manage/books/", formData, {
+      const response = await axios.post(`${backendURL}/manage/books/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -147,7 +149,7 @@ export function AdminBooks() {
   };
 
   useEffect(() => {
-    axios.get("http://localhost:8000/manage/books/")
+    axios.get(`${backendURL}/manage/books/`)
       .then(response => {
         setBooks(response.data);
         const currentBook = response.data[currentIndex];
@@ -170,7 +172,7 @@ export function AdminBooks() {
         console.error("Error fetching books:", error);
       });
 
-    axios.get("http://localhost:8000/manage/stores/")
+      axios.get(`${backendURL}/manage/stores/`)
       .then(response => {
         setStores(response.data);
       })

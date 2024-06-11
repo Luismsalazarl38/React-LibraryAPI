@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import backendURL from '../config'; // Importa la variable backendURL desde el archivo config.js
+
 
 export function AdminStores() {
   const [stores, setStores] = useState([]);
@@ -61,7 +63,7 @@ export function AdminStores() {
           address: formData.address,
           schedule,
         };
-        const response = await axios.patch(`http://localhost:8000/manage/stores/${formData.id}/`, userData);
+        const response = await axios.patch(`${backendURL}/manage/stores/${formData.id}/`, userData);
         if (response) {
           window.location.reload();
         } else {
@@ -84,7 +86,7 @@ export function AdminStores() {
           address: newStoreData.address,
           schedule,
         };
-        const response = await axios.post('http://localhost:8000/manage/stores/', userData, {
+        const response = await axios.post(`${backendURL}/manage/stores/`, userData, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -99,7 +101,7 @@ export function AdminStores() {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:8000/manage/stores/')
+    axios.get(`${backendURL}/manage/stores/`)
       .then(response => {
         setStores(response.data);
         const currentStore = response.data[currentIndex];

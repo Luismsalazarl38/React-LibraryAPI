@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import countryOptions from '../components/conuntries.js';
 import addYears from 'date-fns/addYears';
-
+import backendURL from '../config'; // Importa la variable backendURL desde el archivo config.js
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export function RegisterPage() {
@@ -149,7 +149,7 @@ export function RegisterPage() {
                 fav_topics: formData.favTopics.join(', '),
             };
 
-            const response = await axios.post("http://localhost:8000/users/clients/", userData);
+            const response = await axios.post(`${backendURL}/users/clients/`, userData);
             console.log(response.data);
             window.location.href = '/task-create';
         } catch (error) {

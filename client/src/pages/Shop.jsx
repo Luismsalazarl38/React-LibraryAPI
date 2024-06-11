@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Alert } from 'react-bootstrap';
+import backendURL from "../config"; // Importa la variable backendURL desde el archivo config.js
+
 
 export function Shop() {
   const [books, setBooks] = useState([]);
@@ -15,7 +17,7 @@ export function Shop() {
 
   useEffect(() => {
     // Obtener la información del cliente al cargar el componente
-    axios.get('http://localhost:8000/users/clients/')
+    axios.get(`${backendURL}/users/clients/`)
       .then(response => {
         setClient(response.data[0]);
         fetchClientCards(response.data[0].id);
@@ -25,7 +27,7 @@ export function Shop() {
       });
 
     // Obtener la lista de libros al cargar el componente
-    axios.get('http://localhost:8000/manage/books/')
+    axios.get(`${backendURL}/manage/books/`)
       .then(response => {
         setBooks(response.data);
       })
@@ -36,7 +38,7 @@ export function Shop() {
 
   const fetchClientCards = async (clientId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/manage/cards/?client=${clientId}`);
+      const response = await axios.get(`${backendURL}/manage/cards/?client=${clientId}`);
       setClientCards(response.data);
     } catch (error) {
       console.error('Error fetching client cards:', error);
@@ -45,7 +47,7 @@ export function Shop() {
 
   const handleReserve = async (bookId) => {
     try {
-      const response = await axios.post('http://localhost:8000/manage/reservations/', {
+      const response = await axios.post(`${backendURL}/manage/reservations/`, {
         book: bookId,
         client: client.id,
         expired: false,
@@ -54,7 +56,7 @@ export function Shop() {
 
       if (response.status === 201) {
         setAlertMessage('Reserva realizada con éxito');
-        await axios.patch(`http://localhost:8000/manage/books/${book.id}/`, { reserved: true });
+        await axios.patch(`${backendURL}/manage/books/${book.id}/`, { reserved: true });
         setAlertVariant('success');
       } else {
         setAlertMessage('Error al realizar la reserva');
@@ -85,7 +87,7 @@ export function Shop() {
       }
 
       // Realizar la solicitud POST al endpoint de ventas
-      const response = await axios.post('http://localhost:8000/manage/sales/', {
+      const response = await axios.post(`${backendURL}/manage/sales/`, {
         book: bookId,
         client: client.id,
         date: new Date().toISOString(),
@@ -96,8 +98,8 @@ export function Shop() {
       if (response.status === 201) {
         // Actualizar el saldo de la tarjeta
         const newWallet = selectedCard.wallet - book.price;
-        await axios.patch(`http://localhost:8000/manage/cards/${selectedCard.id}/`, { wallet: newWallet });
-        await axios.patch(`http://localhost:8000/manage/books/${book.id}/`, { sold: true });
+        await axios.patch(`${backendURL}/manage/cards/${selectedCard.id}/`, { wallet: newWallet });
+        await axios.patch(`${backendURL}/manage/books/${book.id}/`, { sold: true });
 
         setAlertMessage('Compra realizada con éxito');
         setAlertVariant('success');
